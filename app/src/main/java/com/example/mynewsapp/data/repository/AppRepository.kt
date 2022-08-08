@@ -5,8 +5,6 @@ import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import com.example.mynewsapp.Constants
 import com.example.mynewsapp.data.ApiEvent
-import com.example.mynewsapp.data.internal.ArticlePagingSource
-import com.example.mynewsapp.data.internal.safeApiCall
 import com.example.mynewsapp.data.model.Article
 import com.example.mynewsapp.data.network.NewsAPI
 import kotlinx.coroutines.flow.Flow

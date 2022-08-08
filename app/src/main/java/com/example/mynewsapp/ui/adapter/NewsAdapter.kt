@@ -30,15 +30,6 @@ class NewsAdapter() :
     inner class NewsViewHolder(private val binding: ListItemArticleBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
-        init {
-            binding.root.setOnClickListener {
-                val position = bindingAdapterPosition
-                if (position != RecyclerView.NO_POSITION) {
-                    val currentArticle = getItem(position)
-                }
-            }
-        }
-
         fun bindData(article: Article) {
             binding.apply {
                 tvArticleTitle.text = article.title
@@ -52,7 +43,6 @@ class NewsAdapter() :
     companion object {
         private val ARTICLE_COMPARATOR = object : DiffUtil.ItemCallback<Article>() {
             override fun areItemsTheSame(oldItem: Article, newItem: Article): Boolean {
-                /* URL is unique for each item */
                 return oldItem.url == oldItem.url
             }
 
