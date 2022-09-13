@@ -16,7 +16,6 @@ import javax.inject.Inject
 import javax.inject.Named
 import javax.inject.Singleton
 
-@Singleton
 class NewsRepository  @Inject constructor(
     private val newsApi: NewsApi,
     private val newsArticleDb: NewsArticleDB,
@@ -86,7 +85,7 @@ class NewsRepository  @Inject constructor(
             }
         )
 
-    suspend fun getAllBookmarkedArticles(): Flow<List<NewsArticle>> =
+    fun getAllBookmarkedArticles(): Flow<List<NewsArticle>> =
         newsArticleDao.getAllBookmarkedArticles()
 
     suspend fun updateArticle(article: NewsArticle) {

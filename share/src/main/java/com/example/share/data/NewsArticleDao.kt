@@ -1,11 +1,9 @@
 package com.example.share.data
 
-import androidx.room.Insert
-import androidx.room.OnConflictStrategy
-import androidx.room.Query
-import androidx.room.Update
+import androidx.room.*
 import kotlinx.coroutines.flow.Flow
 
+@Dao
 interface NewsArticleDao {
     @Query("SELECT * FROM breaking_news INNER JOIN news_articles ON articleUrl = url")
     fun getAllBreakingNewsArticles(): Flow<List<NewsArticle>>

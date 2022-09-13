@@ -16,7 +16,7 @@ class ArticleInteractor @Inject constructor(
         return newsRepository.getBreakingNews(forceRefresh, onFetchSuccess, onFetchFailed)
     }
 
-    suspend fun getAllBookmarkedArticles(): Flow<List<NewsArticle>> {
+    fun getAllBookmarkedArticles(): Flow<List<NewsArticle>> {
         return newsRepository.getAllBookmarkedArticles()
     }
 
