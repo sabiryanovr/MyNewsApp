@@ -6,6 +6,8 @@ import com.example.share.data.NewsArticle
 import com.example.share.domain.ArticleInteractor
 import com.example.share.util.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.flatMapLatest
@@ -40,7 +42,7 @@ class BreakingViewModel @Inject constructor(
     }.stateIn(viewModelScope, SharingStarted.Lazily, null)
 
     init {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO){
             articleInteractor.deleteNonBookmarkedArticlesOlderThan(
                 System.currentTimeMillis() - TimeUnit.DAYS.toMillis(7)
             )
@@ -49,7 +51,7 @@ class BreakingViewModel @Inject constructor(
 
     fun onStart() {
         if (breakingNews.value !is Resource.Loading) {
-            viewModelScope.launch {
+            viewModelScope.launch(Dispatchers.IO) {
                 refreshTriggerChannel.send(Refresh.NORMAL)
             }
         }

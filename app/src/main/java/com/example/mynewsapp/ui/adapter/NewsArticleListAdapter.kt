@@ -2,6 +2,7 @@ package com.example.mynewsapp.ui.adapter
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import com.example.mynewsapp.databinding.ItemNewsArticleBinding
 import com.example.share.data.NewsArticle
@@ -9,7 +10,7 @@ import com.example.share.data.NewsArticle
 class NewsArticleListAdapter (
     private val onItemClick: (NewsArticle) -> Unit,
     private val onBookmarkClick: (NewsArticle) -> Unit
-) : ListAdapter<NewsArticle, NewsArticleViewHolder>(NewsArticleComparator()) {
+) : ListAdapter<NewsArticle, NewsArticleViewHolder>(NewsArticleComparator) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): NewsArticleViewHolder {
         val binding =
@@ -35,5 +36,14 @@ class NewsArticleListAdapter (
         if (currentItem != null) {
             holder.bind(currentItem)
         }
+    }
+
+    object NewsArticleComparator : DiffUtil.ItemCallback<NewsArticle>() {
+
+        override fun areItemsTheSame(oldItem: NewsArticle, newItem: NewsArticle) =
+            oldItem.url == newItem.url
+
+        override fun areContentsTheSame(oldItem: NewsArticle, newItem: NewsArticle) =
+            oldItem == newItem
     }
 }

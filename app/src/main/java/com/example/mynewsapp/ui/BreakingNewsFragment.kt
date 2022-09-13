@@ -46,8 +46,8 @@ class BreakingNewsFragment : Fragment(R.layout.fragment_breaking_news),
             }
         )
 
-     //   newsArticleAdapter.stateRestorationPolicy =
-     //       RecyclerView.Adapter.StateRestorationPolicy.PREVENT_WHEN_EMPTY
+        newsArticleAdapter.stateRestorationPolicy =
+            RecyclerView.Adapter.StateRestorationPolicy.PREVENT_WHEN_EMPTY
 
         binding.apply {
             recyclerView.apply {
