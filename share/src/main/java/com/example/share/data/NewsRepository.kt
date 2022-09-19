@@ -46,20 +46,16 @@ class NewsRepository  @Inject constructor(
 
                         NewsArticle(
                             title = serverBreakingNewsArticle.title,
+                            publishedAt = serverBreakingNewsArticle.publishedAt,
                             url = serverBreakingNewsArticle.url,
                             thumbnailUrl = serverBreakingNewsArticle.urlToImage,
                             isBookmarked = isBookmarked
                         )
                     }
 
-                val breakingNews = breakingNewsArticles.map { article ->
-                    BreakingNews(article.url)
-                }
 
                 newsArticleDb.withTransaction {
-                    newsArticleDao.deleteAllBreakingNews()
                     newsArticleDao.insertArticles(breakingNewsArticles)
-                    newsArticleDao.insertBreakingNews(breakingNews)
                 }
             },
             shouldFetch = { cachedArticles ->

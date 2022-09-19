@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.share.data.NewsArticle
 import com.example.share.data.NewsArticleDB
+import com.example.share.data.NewsRepository
 import com.example.share.domain.ArticleInteractor
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
@@ -13,7 +14,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class BookmarksViewModel @Inject constructor(
-    private val articleInteractor: ArticleInteractor
+    private val articleInteractor: NewsRepository
 ) :
     ViewModel() {
     val bookmarks = articleInteractor.getAllBookmarkedArticles()

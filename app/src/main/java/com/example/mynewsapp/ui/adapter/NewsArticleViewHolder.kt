@@ -20,7 +20,7 @@ class NewsArticleViewHolder (
                 .into(imageView)
 
             textViewTitle.text = article.title ?: ""
-
+            textViewDate.text = article.publishedAt ?: ""
             imageViewBookmark.setImageResource(
                 when {
                     article.isBookmarked -> R.drawable.ic_bookmark_selected

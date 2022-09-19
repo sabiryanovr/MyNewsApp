@@ -6,8 +6,6 @@ import com.example.share.data.NewsArticle
 import com.example.share.domain.ArticleInteractor
 import com.example.share.util.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.flatMapLatest
@@ -22,7 +20,6 @@ class BreakingViewModel @Inject constructor(
     private val articleInteractor: ArticleInteractor
 ) : ViewModel() {
     private val eventChannel = Channel<Event>()
-    val events = eventChannel.receiveAsFlow()
 
     private val refreshTriggerChannel = Channel<Refresh>()
     private val refreshTrigger = refreshTriggerChannel.receiveAsFlow()
@@ -42,7 +39,7 @@ class BreakingViewModel @Inject constructor(
     }.stateIn(viewModelScope, SharingStarted.Lazily, null)
 
     init {
-        viewModelScope.launch(Dispatchers.IO){
+        viewModelScope.launch{
             articleInteractor.deleteNonBookmarkedArticlesOlderThan(
                 System.currentTimeMillis() - TimeUnit.DAYS.toMillis(7)
             )
@@ -51,7 +48,7 @@ class BreakingViewModel @Inject constructor(
 
     fun onStart() {
         if (breakingNews.value !is Resource.Loading) {
-            viewModelScope.launch(Dispatchers.IO) {
+            viewModelScope.launch {
                 refreshTriggerChannel.send(Refresh.NORMAL)
             }
         }
@@ -74,7 +71,8 @@ class BreakingViewModel @Inject constructor(
     }
 
     enum class Refresh {
-        FORCE, NORMAL
+        FORCE,
+        NORMAL
     }
 
     sealed class Event {

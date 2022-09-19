@@ -5,7 +5,7 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface NewsArticleDao {
-    @Query("SELECT * FROM breaking_news INNER JOIN news_articles ON articleUrl = url")
+    @Query("SELECT * FROM news_articles")
     fun getAllBreakingNewsArticles(): Flow<List<NewsArticle>>
 
 
@@ -15,8 +15,8 @@ interface NewsArticleDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertArticles(articles: List<NewsArticle>)
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertBreakingNews(breakingNews: List<BreakingNews>)
+//    @Insert(onConflict = OnConflictStrategy.REPLACE)
+//    suspend fun insertBreakingNews(breakingNews: List<BreakingNews>)
 
     @Update
     suspend fun updateArticle(article: NewsArticle)
@@ -25,8 +25,8 @@ interface NewsArticleDao {
     suspend fun resetAllBookmarks()
 
 
-    @Query("DELETE FROM breaking_news")
-    suspend fun deleteAllBreakingNews()
+//    @Query("DELETE FROM breaking_news")
+//    suspend fun deleteAllBreakingNews()
 
     @Query("DELETE FROM news_articles WHERE updatedAt < :timestampInMillis AND isBookmarked = 0")
     suspend fun deleteNonBookmarkedArticlesOlderThan(timestampInMillis: Long)

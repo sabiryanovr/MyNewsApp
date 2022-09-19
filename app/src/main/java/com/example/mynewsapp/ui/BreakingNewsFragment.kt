@@ -87,7 +87,6 @@ class BreakingNewsFragment : Fragment(R.layout.fragment_breaking_news),
             buttonRetry.setOnClickListener {
                 viewModel.onManualRefresh()
             }
-
         }
 
         setHasOptionsMenu(true)
