@@ -48,7 +48,7 @@ class BookmarksFragment : Fragment(R.layout.fragment_bookmarks),
             }
         )
 
-        bookmarksAdapter.stateRestorationPolicy =
+      bookmarksAdapter.stateRestorationPolicy =
             RecyclerView.Adapter.StateRestorationPolicy.PREVENT_WHEN_EMPTY
 
         binding.apply {
