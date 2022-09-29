@@ -20,7 +20,7 @@ class NewsArticleViewHolder (
                 .into(imageView)
 
             textViewTitle.text = article.title ?: ""
-            textViewDate.text = article.publishedAt ?: ""
+            textViewDate.text = article.publishedAt?.let { dateFormat(it) }
             imageViewBookmark.setImageResource(
                 when {
                     article.isBookmarked -> R.drawable.ic_bookmark_selected
@@ -45,5 +45,9 @@ class NewsArticleViewHolder (
                 }
             }
         }
+    }
+
+    private fun dateFormat(str: String): String {
+        return str.substring(8,10) + "/" + str.substring(5,7) + "/" + str.substring(0,4)
     }
 }
