@@ -6,10 +6,13 @@
         android:icon="@drawable/ic_breaking"
         android:title="@string/breaking" />
 
-
     <item
         android:id="@+id/nav_bookmarks"
         android:icon="@drawable/ic_bookmarks"
         android:title="@string/bookmarks" />
 
+    <item
+        android:id="@+id/nav_setting"
+        android:icon="@drawable/ic_baseline_settings_24"
+        android:title="@string/setting" />
 </menu>

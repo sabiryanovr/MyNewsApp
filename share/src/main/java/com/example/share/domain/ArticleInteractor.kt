@@ -28,6 +28,10 @@ class ArticleInteractor @Inject constructor(
         newsRepository.resetAllBookmarks()
     }
 
+    suspend fun deleteNonBookmarkedArticles() {
+        newsRepository.deleteNonBookmarkedArticles()
+    }
+
     suspend fun deleteNonBookmarkedArticlesOlderThan(timestampInMillis: Long) {
         newsRepository.deleteNonBookmarkedArticlesOlderThan(timestampInMillis)
     }

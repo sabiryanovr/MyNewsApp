@@ -2,8 +2,10 @@
     <string name="app_name">My News App</string>
     <string name="title_breaking_news">Breaking News</string>
     <string name="title_bookmarks">Bookmarks</string>
+    <string name="title_setting">Setting</string>
     <string name="breaking">Breaking</string>
     <string name="bookmarks">Bookmarks</string>
+    <string name="setting">Setting</string>
     <string name="could_not_refresh">Could not refresh: %s</string>
     <string name="unknown_error_occurred">An unknown error occurred</string>
     <string name="retry">Retry</string>
@@ -11,4 +13,9 @@
     <string name="no_bookmarks">No bookmarks</string>
     <string name="no_results_found">No results found</string>
     <string name="delete_all_bookmarks">Delete all bookmarks</string>
+    <string name="delete_breaking_news">Delete Breaking News</string>
+    <string name="delete_bookmarks_news">BookMark Articles has been removed</string>
+    <string name="delete_non_bookmarks_news">Non BookMark Articles has been removed</string>
+    <string name="text_delete_non_bookmarks_news">When deleting the latest news, bookmarks remain</string>
+
 </resources>

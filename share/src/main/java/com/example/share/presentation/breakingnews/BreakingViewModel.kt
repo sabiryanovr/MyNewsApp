@@ -20,6 +20,7 @@ class BreakingViewModel @Inject constructor(
     private val articleInteractor: ArticleInteractor
 ) : ViewModel() {
     private val eventChannel = Channel<Event>()
+    val events = eventChannel.receiveAsFlow()
 
     private val refreshTriggerChannel = Channel<Refresh>()
     private val refreshTrigger = refreshTriggerChannel.receiveAsFlow()

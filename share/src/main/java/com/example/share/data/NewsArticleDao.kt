@@ -15,9 +15,6 @@ interface NewsArticleDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertArticles(articles: List<NewsArticle>)
 
-//    @Insert(onConflict = OnConflictStrategy.REPLACE)
-//    suspend fun insertBreakingNews(breakingNews: List<BreakingNews>)
-
     @Update
     suspend fun updateArticle(article: NewsArticle)
 
@@ -25,8 +22,12 @@ interface NewsArticleDao {
     suspend fun resetAllBookmarks()
 
 
-//    @Query("DELETE FROM breaking_news")
-//    suspend fun deleteAllBreakingNews()
+    @Query("DELETE FROM news_articles")
+    suspend fun deleteAllBreakingNews()
+
+    @Query("DELETE FROM news_articles WHERE isBookmarked = 0")
+    suspend fun deleteNonBookmarkedArticles()
+
 
     @Query("DELETE FROM news_articles WHERE updatedAt < :timestampInMillis AND isBookmarked = 0")
     suspend fun deleteNonBookmarkedArticlesOlderThan(timestampInMillis: Long)

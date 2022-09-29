@@ -7,9 +7,12 @@ import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
+import androidx.core.view.MenuHost
+import androidx.core.view.MenuProvider
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -65,22 +68,27 @@ class BookmarksFragment : Fragment(R.layout.fragment_bookmarks),
                 }
             }
         }
-
-        setHasOptionsMenu(true)
+        setupMenu()
+//        setHasOptionsMenu(true)
     }
+    private fun setupMenu() {
+        (requireActivity() as MenuHost).addMenuProvider(object : MenuProvider {
 
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        inflater.inflate(R.menu.menu_bookmarks, menu)
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem) =
-        when (item.itemId) {
-            R.id.action_delete_all_bookmarks -> {
-                viewModel.onDeleteAllBookmarks()
-                true
+            override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+                menuInflater.inflate(R.menu.menu_bookmarks, menu)
             }
-            else -> super.onOptionsItemSelected(item)
-        }
+
+            override fun onMenuItemSelected(menuItem: MenuItem) =
+                when (menuItem.itemId) {
+                    R.id.action_delete_all_bookmarks -> {
+                        viewModel.onDeleteAllBookmarks()
+                        true
+                    }
+                    else -> false
+                }
+
+        }, viewLifecycleOwner, Lifecycle.State.RESUMED)
+    }
 
     override fun onBottomNavigationFragmentReselected() {
         binding.recyclerView.scrollToPosition(0)

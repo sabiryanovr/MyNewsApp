@@ -16,6 +16,8 @@ import javax.inject.Inject
 import javax.inject.Named
 import javax.inject.Singleton
 
+// На основе реализации кэширования с помощью networkboundresource
+// пример_https://www.geeksforgeeks.org/how-to-implement-offline-caching-using-networkboundresource-in-android/
 class NewsRepository  @Inject constructor(
     private val newsApi: NewsApi,
     private val newsArticleDb: NewsArticleDB,
@@ -90,6 +92,10 @@ class NewsRepository  @Inject constructor(
 
     suspend fun resetAllBookmarks() {
         newsArticleDao.resetAllBookmarks()
+    }
+
+    suspend fun deleteNonBookmarkedArticles() {
+        newsArticleDao.deleteNonBookmarkedArticles()
     }
 
     suspend fun deleteNonBookmarkedArticlesOlderThan(timestampInMillis: Long) {

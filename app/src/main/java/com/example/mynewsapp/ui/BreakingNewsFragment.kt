@@ -19,6 +19,7 @@ import com.example.mynewsapp.databinding.FragmentBreakingNewsBinding
 import com.example.mynewsapp.ui.adapter.NewsArticleListAdapter
 import com.example.share.presentation.breakingnews.BreakingViewModel
 import com.example.share.util.Resource
+import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -87,28 +88,28 @@ class BreakingNewsFragment : Fragment(R.layout.fragment_breaking_news),
             buttonRetry.setOnClickListener {
                 viewModel.onManualRefresh()
             }
-        }
 
-        setHasOptionsMenu(true)
+            viewLifecycleOwner.lifecycleScope.launchWhenStarted {
+                viewModel.events.collect { event ->
+                    when (event) {
+                        is BreakingViewModel.Event.ShowErrorMessage ->
+                            showSnackbar(
+                                getString(
+                                    R.string.could_not_refresh,
+                                    event.error.localizedMessage
+                                        ?: getString(R.string.unknown_error_occurred)
+                                )
+                            )
+                    }
+                }
+            }
+        }
     }
 
     override fun onStart() {
         super.onStart()
         viewModel.onStart()
     }
-
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        inflater.inflate(R.menu.menu_breaking_news, menu)
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem) =
-        when (item.itemId) {
-            R.id.action_refresh -> {
-                viewModel.onManualRefresh()
-                true
-            }
-            else -> super.onOptionsItemSelected(item)
-        }
 
     override fun onBottomNavigationFragmentReselected() {
         binding.recyclerView.scrollToPosition(0)
@@ -117,5 +118,13 @@ class BreakingNewsFragment : Fragment(R.layout.fragment_breaking_news),
     override fun onDestroyView() {
         super.onDestroyView()
         currentBinding = null
+    }
+
+    private fun Fragment.showSnackbar(
+        message: String,
+        duration: Int = Snackbar.LENGTH_LONG,
+        view: View = requireView()
+    ) {
+        Snackbar.make(view, message, duration).show()
     }
 }
