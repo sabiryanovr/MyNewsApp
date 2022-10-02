@@ -1,29 +1,42 @@
 package com.example.myapplication.screen
 
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.wrapContentSize
-import androidx.compose.material.Text
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.share.data.NewsArticle
+import com.example.share.presentation.bookmarks.BookmarksViewModel
 
 @Composable
-fun BookmarkScreen() {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .wrapContentSize(Alignment.Center)
-    ) {
-        Text(
-            text = "Bookmarks View",
-            fontWeight = FontWeight.Bold,
-            modifier = Modifier.align(Alignment.CenterHorizontally),
-            textAlign = TextAlign.Center,
-            fontSize = 25.sp
-        )
+fun BookmarkScreen(
+    viewModel: BookmarksViewModel = hiltViewModel(),
+    modifier: Modifier = Modifier
+) {
+    val state = viewModel.uiStateLiveData.observeAsState()
+    when (val uiState = state.value) {
+        is BookmarksViewModel.UiStateView.Data -> {
+            viewModel.updateBookmarksNews()
+            BookmarksNews(modifier, uiState.news, viewModel)
+        }
+        is BookmarksViewModel.UiStateView.Error -> {
+            ErrorScreen(message = uiState.throwable.message ?: "Error") {
+                viewModel.refresh()
+            }
+        }
+        BookmarksViewModel.UiStateView.Loading -> {
+        }
+        null -> {}
+    }
+}
+
+@Composable
+fun BookmarksNews(modifier: Modifier, news: List<NewsArticle>, viewModel: BookmarksViewModel) {
+
+    LazyColumn {
+        items(news) { article ->
+            NewsItem(article = article, modifier = modifier, {viewModel.onBookmarkClick(article)})
+        }
     }
 }

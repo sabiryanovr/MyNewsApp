@@ -16,75 +16,54 @@ import javax.inject.Inject
 import javax.inject.Named
 import javax.inject.Singleton
 
-// На основе реализации кэширования с помощью networkboundresource
-// пример_https://www.geeksforgeeks.org/how-to-implement-offline-caching-using-networkboundresource-in-android/
 class NewsRepository  @Inject constructor(
     private val newsApi: NewsApi,
     private val newsArticleDb: NewsArticleDB,
+//    private val backgroundDispatcher: CoroutineDispatcher = Dispatchers.IO
 ) {
     private val newsArticleDao = newsArticleDb.newsArticleDao()
 
-    suspend fun getBreakingNews(
-        forceRefresh: Boolean,
-        onFetchSuccess: () -> Unit,
-        onFetchFailed: (Throwable) -> Unit
-    ): Flow<Resource<List<NewsArticle>>> =
-        networkBoundResource(
-            query = {
-                newsArticleDao.getAllBreakingNewsArticles()
-            },
-            fetch = {
-                val response = newsApi.getBreakingNews()
-                response.articles
-            },
-            saveFetchResult = { serverBreakingNewsArticles ->
-                val bookmarkedArticles = newsArticleDao.getAllBookmarkedArticles().first()
-
-                val breakingNewsArticles =
-                    serverBreakingNewsArticles.map { serverBreakingNewsArticle ->
-                        val isBookmarked = bookmarkedArticles.any { bookmarkedArticle ->
-                            bookmarkedArticle.url == serverBreakingNewsArticle.url
-                        }
-
-                        NewsArticle(
-                            title = serverBreakingNewsArticle.title,
-                            publishedAt = serverBreakingNewsArticle.publishedAt,
-                            url = serverBreakingNewsArticle.url,
-                            thumbnailUrl = serverBreakingNewsArticle.urlToImage,
-                            isBookmarked = isBookmarked
-                        )
-                    }
-
-
-                newsArticleDb.withTransaction {
-                    newsArticleDao.insertArticles(breakingNewsArticles)
+    suspend fun getBreakingNews(forceCache: Boolean): Result<List<NewsArticle>> =
+        withContext(Dispatchers.IO) {
+            if (forceCache) {
+                val breakingCache = newsArticleDao.getAllBreakingNewsArticles()
+                if (breakingCache.size != 0){
+                    return@withContext Result.success(breakingCache)
                 }
-            },
-            shouldFetch = { cachedArticles ->
-                if (forceRefresh) {
-                    true
-                } else {
-                    val sortedArticles = cachedArticles.sortedBy { article ->
-                        article.updatedAt
-                    }
-                    val oldestTimestamp = sortedArticles.firstOrNull()?.updatedAt
-                    val needsRefresh = oldestTimestamp == null ||
-                            oldestTimestamp < System.currentTimeMillis() -
-                            TimeUnit.MINUTES.toMillis(60)
-                    needsRefresh
-                }
-            },
-            onFetchSuccess = onFetchSuccess,
-            onFetchFailed = { t ->
-                if (t !is HttpException && t !is IOException) {
-                    throw t
-                }
-                onFetchFailed(t)
             }
-        )
+            val response = newsApi.getBreakingNews()
+            try{
+                val bookmarkedArticles = newsArticleDao.getAllBookmarkedArticles()
+                val newsArticles = response.articles.map {
+                        serverBreakingNewsArticle ->
 
-    fun getAllBookmarkedArticles(): Flow<List<NewsArticle>> =
-        newsArticleDao.getAllBookmarkedArticles()
+                    val isBookmarked = bookmarkedArticles.any { bookmarkedArticle ->
+                        bookmarkedArticle.url == serverBreakingNewsArticle.url
+                    }
+
+                    NewsArticle(
+                        title = serverBreakingNewsArticle.title,
+                        publishedAt = serverBreakingNewsArticle.publishedAt,
+                        url = serverBreakingNewsArticle.url,
+                        thumbnailUrl = serverBreakingNewsArticle.urlToImage,
+                        isBookmarked = isBookmarked
+                    )
+               }
+                newsArticleDb.withTransaction {
+                    newsArticleDao.insertArticles(newsArticles)
+                }
+                val breakingCache = newsArticleDao.getAllBreakingNewsArticles()
+                if (breakingCache.size != 0) {
+                    return@withContext Result.success(breakingCache)
+                }
+
+            } catch (e: Throwable) {
+
+            }
+            error("ApiResponse return is not valid")
+        }
+
+
 
     suspend fun updateArticle(article: NewsArticle) {
         newsArticleDao.updateArticle(article)

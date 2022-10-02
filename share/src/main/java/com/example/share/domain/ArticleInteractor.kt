@@ -9,15 +9,16 @@ import javax.inject.Inject
 class ArticleInteractor @Inject constructor(
     private val newsRepository: NewsRepository
 ) {
-    suspend fun getBreakingNews(
-        forceRefresh: Boolean,
-        onFetchSuccess: () -> Unit,
-        onFetchFailed: (Throwable) -> Unit): Flow<Resource<List<NewsArticle>>> {
-        return newsRepository.getBreakingNews(forceRefresh, onFetchSuccess, onFetchFailed)
-    }
+    suspend fun getBreakingNews( forceCache: Boolean): Result<List<NewsArticle>> =
+        newsRepository.getBreakingNews(forceCache)
 
-    fun getAllBookmarkedArticles(): Flow<List<NewsArticle>> {
-        return newsRepository.getAllBookmarkedArticles()
+    suspend fun getAllBookmarkedArticles(): Result<List<NewsArticle>> {
+        val boomarksNews = newsRepository.getBreakingNews(true).map {
+            news -> news.filter {
+                it.isBookmarked
+            }
+        }
+        return boomarksNews
     }
 
     suspend fun updateArticle(article: NewsArticle) {

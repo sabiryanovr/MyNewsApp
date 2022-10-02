@@ -3,6 +3,7 @@ package com.example.share.presentation.setting
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.share.data.NewsRepository
+import com.example.share.domain.ArticleInteractor
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -10,7 +11,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SettingViewModel @Inject constructor(
-    private val articleInteractor: NewsRepository
+    private val articleInteractor: ArticleInteractor
 ) : ViewModel() {
     // TODO: Implement the ViewModel
 

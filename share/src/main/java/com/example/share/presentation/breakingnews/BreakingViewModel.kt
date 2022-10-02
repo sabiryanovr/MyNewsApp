@@ -1,5 +1,7 @@
 package com.example.share.presentation.breakingnews
 
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.share.data.NewsArticle
@@ -12,6 +14,7 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
@@ -19,48 +22,49 @@ import javax.inject.Inject
 class BreakingViewModel @Inject constructor(
     private val articleInteractor: ArticleInteractor
 ) : ViewModel() {
-    private val eventChannel = Channel<Event>()
-    val events = eventChannel.receiveAsFlow()
+    sealed class UiStateView {
+        data class Data(val news: List<NewsArticle>) : UiStateView()
+        object Loading : UiStateView()
+        class Error(val throwable: Throwable) : UiStateView()
+    }
 
-    private val refreshTriggerChannel = Channel<Refresh>()
-    private val refreshTrigger = refreshTriggerChannel.receiveAsFlow()
-
-    var pendingScrollToTopAfterRefresh = false
-
-    val breakingNews = refreshTrigger.flatMapLatest { refresh ->
-        articleInteractor.getBreakingNews(
-            refresh == Refresh.FORCE,
-            onFetchSuccess = {
-                pendingScrollToTopAfterRefresh = true
-            },
-            onFetchFailed = { t ->
-                viewModelScope.launch { eventChannel.send(Event.ShowErrorMessage(t)) }
-            }
-        )
-    }.stateIn(viewModelScope, SharingStarted.Lazily, null)
+    private val _uiStateLiveData: MutableLiveData<UiStateView> =
+        MutableLiveData(UiStateView.Loading)
+    val uiStateLiveData: LiveData<UiStateView> get() = _uiStateLiveData
 
     init {
-        viewModelScope.launch{
+        refresh()
+    }
+
+    fun refresh() {
+        viewModelScope.launch {
+            _uiStateLiveData.value = UiStateView.Loading
+            try {
+                val result = articleInteractor.getBreakingNews(true)
+                result
+                    .onSuccess { _uiStateLiveData.value = UiStateView.Data(it) }
+                    .onFailure {
+                        _uiStateLiveData.value = UiStateView.Error(it)
+                        Timber.w(it)
+                    }
+            } catch (t: Throwable) {
+                _uiStateLiveData.value = UiStateView.Error(t)
+                Timber.w(t)
+            }
+        }
+    }
+
+    init {
+        viewModelScope.launch {
             articleInteractor.deleteNonBookmarkedArticlesOlderThan(
                 System.currentTimeMillis() - TimeUnit.DAYS.toMillis(7)
             )
         }
     }
 
-    fun onStart() {
-        if (breakingNews.value !is Resource.Loading) {
-            viewModelScope.launch {
-                refreshTriggerChannel.send(Refresh.NORMAL)
-            }
-        }
-    }
 
     fun onManualRefresh() {
-        if (breakingNews.value !is Resource.Loading) {
-            viewModelScope.launch {
-                refreshTriggerChannel.send(Refresh.FORCE)
-            }
-        }
+        refresh()
     }
 
     fun onBookmarkClick(article: NewsArticle) {
@@ -68,15 +72,24 @@ class BreakingViewModel @Inject constructor(
         val updatedArticle = article.copy(isBookmarked = !currentlyBookmarked)
         viewModelScope.launch {
             articleInteractor.updateArticle(updatedArticle)
+        }.invokeOnCompletion { updateBreakingNews() }
+    }
+
+    fun updateBreakingNews() {
+        viewModelScope.launch {
+            try {
+                val result = articleInteractor.getBreakingNews(true)
+                result
+                    .onSuccess { _uiStateLiveData.value = UiStateView.Data(it) }
+                    .onFailure {
+                        _uiStateLiveData.value = UiStateView.Error(it)
+                        Timber.w(it)
+                    }
+            } catch (t: Throwable) {
+                _uiStateLiveData.value = UiStateView.Error(t)
+                Timber.w(t)
+            }
         }
     }
-
-    enum class Refresh {
-        FORCE,
-        NORMAL
-    }
-
-    sealed class Event {
-        data class ShowErrorMessage(val error: Throwable) : Event()
-    }
 }
+

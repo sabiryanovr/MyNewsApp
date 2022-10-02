@@ -1,5 +1,6 @@
 package com.example.share.api
 
+import com.example.imdb.networking.ApiResponse
 import com.example.share.Constants
 import retrofit2.Response
 import retrofit2.http.GET

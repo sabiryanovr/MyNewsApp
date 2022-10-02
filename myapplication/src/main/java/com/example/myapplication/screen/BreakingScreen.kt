@@ -1,34 +1,42 @@
 package com.example.myapplication.screen
 
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.wrapContentSize
-import androidx.compose.material.Text
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.share.presentation.breakingnews.BreakingViewModel
+import androidx.compose.runtime.livedata.observeAsState
+import com.example.share.data.NewsArticle
 
 @Composable
 fun BreakingScreen(
-    viewModel: BreakingViewModel = hiltViewModel()
+    viewModel: BreakingViewModel = hiltViewModel(),
+    modifier: Modifier = Modifier
 ) {
+    val state = viewModel.uiStateLiveData.observeAsState()
+    when (val uiState = state.value) {
+        is BreakingViewModel.UiStateView.Data -> {
+            viewModel.updateBreakingNews()
+            BreakingNews(modifier, uiState.news, viewModel)
+        }
+        is BreakingViewModel.UiStateView.Error -> {
+            ErrorScreen(message = uiState.throwable.message ?: "Error") {
+                viewModel.refresh()
+            }
+        }
+        BreakingViewModel.UiStateView.Loading -> {
+        }
+        null -> {}
+    }
+}
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .wrapContentSize(Alignment.Center)
-    ) {
-        Text(
-            text = "Breaking View",
-            fontWeight = FontWeight.Bold,
-            modifier = Modifier.align(Alignment.CenterHorizontally),
-            textAlign = TextAlign.Center,
-            fontSize = 25.sp
-        )
+@Composable
+fun BreakingNews(modifier: Modifier, news: List<NewsArticle>, viewModel: BreakingViewModel) {
+
+    LazyColumn {
+        items(news) { article ->
+            NewsItem(article = article, modifier = modifier, {viewModel.onBookmarkClick(article)})
+        }
     }
 }
