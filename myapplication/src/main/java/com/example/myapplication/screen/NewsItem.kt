@@ -10,17 +10,20 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.share.data.NewsArticle
 import coil.compose.AsyncImage
+import com.example.myapplication.R
 import com.example.myapplication.ui.theme.Typography
 
 @Composable
 fun NewsItem(
     article: NewsArticle,
     modifier: Modifier = Modifier,
-    onBookmarkClick: () -> Unit
+    onBookmarkClick: () -> Unit,
+    onItemClick: () -> Unit
 
 ) {
     Row(
@@ -49,26 +52,35 @@ fun NewsItem(
                 text = article.publishedAt!!,
                 style = Typography.titleMedium
             )
-            Button(
-                onClick =  onBookmarkClick,
+            Row(
                 modifier = modifier
-                    .align(alignment = Alignment.End),
-            ) {
-                if (article.isBookmarked)
-                    Image(
-                        painter = painterResource(id = com.example.myapplication.R.drawable.ic_bookmark_selected),
-                        contentDescription = null,
-                        colorFilter = ColorFilter.tint(color = Color.White)
-                    )
-                else
-                    Image(
-                        painter = painterResource(id = com.example.myapplication.R.drawable.ic_bookmark_unselected),
-                        contentDescription = null,
-                        colorFilter = ColorFilter.tint(color = Color.White)
-                    )
+                    .align(alignment = Alignment.End)
+                ){
+                Button(
+                    onClick =  onItemClick,
+                ) {
+                    Text(text = stringResource(R.string.previewArticle))
+                }
+                Button(
+                    onClick =  onBookmarkClick,
+                ) {
+                    if (article.isBookmarked)
+                        Image(
+                            painter = painterResource(id = com.example.myapplication.R.drawable.ic_bookmark_selected),
+                            contentDescription = null,
+                            colorFilter = ColorFilter.tint(color = Color.White)
+                        )
+                    else
+                        Image(
+                            painter = painterResource(id = com.example.myapplication.R.drawable.ic_bookmark_unselected),
+                            contentDescription = null,
+                            colorFilter = ColorFilter.tint(color = Color.White)
+                        )
+
+                }
 
             }
-        }
+         }
     }
 }
 
@@ -83,6 +95,7 @@ fun NewsArticlePreview() {
             url = "https://ya.ru",
             thumbnailUrl = "https://ss.sport-express.ru/userfiles/materials/182/1822831/large.jpg"
         ),
-        onBookmarkClick = {}
+        onBookmarkClick = {},
+        onItemClick = {}
     )
 }

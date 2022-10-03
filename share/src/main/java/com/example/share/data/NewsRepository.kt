@@ -25,7 +25,8 @@ class NewsRepository  @Inject constructor(
 
     suspend fun getBreakingNews(forceCache: Boolean): Result<List<NewsArticle>> =
         withContext(Dispatchers.IO) {
-            if (forceCache) {
+
+            if (!forceCache) {
                 val breakingCache = newsArticleDao.getAllBreakingNewsArticles()
                 if (breakingCache.size != 0){
                     return@withContext Result.success(breakingCache)
@@ -79,5 +80,9 @@ class NewsRepository  @Inject constructor(
 
     suspend fun deleteNonBookmarkedArticlesOlderThan(timestampInMillis: Long) {
         newsArticleDao.deleteNonBookmarkedArticlesOlderThan(timestampInMillis)
+    }
+
+    suspend fun getUpdatedAtNewsArticle(): Long {
+        return newsArticleDao.getUpdatedAtNewsArticle()
     }
 }

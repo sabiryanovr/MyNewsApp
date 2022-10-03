@@ -31,4 +31,7 @@ interface NewsArticleDao {
 
     @Query("DELETE FROM news_articles WHERE updatedAt < :timestampInMillis AND isBookmarked = 0")
     suspend fun deleteNonBookmarkedArticlesOlderThan(timestampInMillis: Long)
+
+    @Query("SELECT updatedAt FROM news_articles LIMIT 1")
+    suspend fun getUpdatedAtNewsArticle(): Long
 }

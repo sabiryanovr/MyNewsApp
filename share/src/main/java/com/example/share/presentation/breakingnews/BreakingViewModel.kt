@@ -40,7 +40,16 @@ class BreakingViewModel @Inject constructor(
         viewModelScope.launch {
             _uiStateLiveData.value = UiStateView.Loading
             try {
-                val result = articleInteractor.getBreakingNews(true)
+                var updatedAtNews: Long? = null
+                try{
+                    updatedAtNews = articleInteractor.getUpdatedAtNewsArticle()
+                } catch (t: Throwable) {
+                }
+                val needsRefresh = updatedAtNews == null ||
+                        updatedAtNews < System.currentTimeMillis() -
+                        TimeUnit.MINUTES.toMillis(60)
+
+                val result = articleInteractor.getBreakingNews(needsRefresh)
                 result
                     .onSuccess { _uiStateLiveData.value = UiStateView.Data(it) }
                     .onFailure {

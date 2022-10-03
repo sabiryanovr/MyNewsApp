@@ -24,7 +24,7 @@ class SettingViewModel @Inject constructor(
 
     fun onDeleteNonBookmarkedArticles() {
         viewModelScope.launch {
-            articleInteractor.deleteNonBookmarkedArticles()
+            articleInteractor.getBreakingNews(true)
             Timber.d("Non BookMark Articles has been removed")
         }
     }

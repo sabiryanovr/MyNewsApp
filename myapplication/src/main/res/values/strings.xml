@@ -3,4 +3,8 @@
     <string name="breaking">Breaking</string>
     <string name="bookmarks">Bookmarks</string>
     <string name="setting">Setting</string>
+    <string name="delete_all_bookmarks">Delete all bookmarks</string>
+    <string name="delete_bookmarks_news">Delete Breaking News</string>
+    <string name="text_delete_non_bookmarks_news">When deleting the breaking news, bookmarks remain</string>
+    <string name="previewArticle">Preview</string>
 </resources>

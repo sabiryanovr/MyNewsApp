@@ -36,4 +36,8 @@ class ArticleInteractor @Inject constructor(
     suspend fun deleteNonBookmarkedArticlesOlderThan(timestampInMillis: Long) {
         newsRepository.deleteNonBookmarkedArticlesOlderThan(timestampInMillis)
     }
+
+    suspend fun getUpdatedAtNewsArticle(): Long {
+        return newsRepository.getUpdatedAtNewsArticle()
+    }
 }

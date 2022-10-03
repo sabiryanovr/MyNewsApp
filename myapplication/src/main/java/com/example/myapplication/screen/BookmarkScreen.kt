@@ -36,7 +36,7 @@ fun BookmarksNews(modifier: Modifier, news: List<NewsArticle>, viewModel: Bookma
 
     LazyColumn {
         items(news) { article ->
-            NewsItem(article = article, modifier = modifier, {viewModel.onBookmarkClick(article)})
+            NewsItem(article = article, modifier = modifier, {viewModel.onBookmarkClick(article)}, {})
         }
     }
 }
