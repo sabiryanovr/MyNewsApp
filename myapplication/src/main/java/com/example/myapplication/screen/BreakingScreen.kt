@@ -2,6 +2,7 @@ package com.example.myapplication.screen
 
 import android.content.Intent
 import android.net.Uri
+import android.os.Build
 import android.view.ViewGroup
 import android.webkit.WebView
 import android.webkit.WebViewClient
@@ -14,6 +15,8 @@ import com.example.share.presentation.breakingnews.BreakingViewModel
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.viewinterop.AndroidView
 import com.example.share.data.NewsArticle
+import androidx.activity.ComponentActivity
+
 
 @Composable
 fun BreakingScreen(
@@ -51,6 +54,14 @@ fun BreakingNews(modifier: Modifier, news: List<NewsArticle>, viewModel: Breakin
 
 private fun previewItem(url: String) {
     val uri = Uri.parse(url)
+/*    val intent = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+        val intent = Intent(Intent.ACTION_VIEW, uri)
+        intent.flags = Intent.FLAG_GRANT_READ_URI_PERMISSION
+        intent
+        startActivityForResult(intent, 1)
+    }
+
+ */
 /*
     AndroidView(factory = {
         WebView(it).apply {
