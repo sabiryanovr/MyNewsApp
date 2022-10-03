@@ -84,8 +84,8 @@ private fun render(uiStateView: BreakingViewModel.UiStateView) {
         is BreakingViewModel.UiStateView.Error -> {
             showSnackbar(
                 getString(
-                    R.string.could_not_refresh
-                )
+                    R.string.could_not_refresh,
+                 uiStateView.throwable.message?: "Error"),
             )
 
         }

@@ -16,6 +16,9 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.viewinterop.AndroidView
 import com.example.share.data.NewsArticle
 import androidx.activity.ComponentActivity
+import androidx.compose.material3.Snackbar
+import androidx.compose.material3.Text
+import androidx.compose.ui.unit.sp
 
 
 @Composable
@@ -30,9 +33,12 @@ fun BreakingScreen(
             BreakingNews(modifier, uiState.news, viewModel)
         }
         is BreakingViewModel.UiStateView.Error -> {
-            ErrorScreen(message = uiState.throwable.message ?: "Error") {
-                viewModel.refresh()
+            Snackbar{
+                Text(uiState.throwable.message ?: "Error", fontSize = 22.sp)
             }
+//            ErrorScreen(message = uiState.throwable.message ?: "Error") {
+//               viewModel.refresh()
+//           }
         }
         BreakingViewModel.UiStateView.Loading -> {
             LoadingScreen(modifier = modifier)

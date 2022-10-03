@@ -9,6 +9,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -30,32 +31,34 @@ fun NewsItem(
         verticalAlignment = Alignment.CenterVertically,
         modifier = modifier
     ) {
-        AsyncImage(
-            model = article.thumbnailUrl,
-            contentDescription = null,
-            modifier = modifier
-                .padding(16.dp)
-                .width(124.dp)
-                .height(124.dp),
-            placeholder = painterResource(id = com.example.myapplication.R.drawable.image_placeholder)
-        )
         Column(
             modifier = modifier
                 .weight(1f, fill = true)
-                .padding(end = 16.dp),
+                .padding(start = 10.dp, end = 10.dp, top = 10.dp, bottom = 10.dp)
         ) {
+            AsyncImage(
+                model = article.thumbnailUrl,
+                contentDescription = null,
+                modifier = modifier
+                    .height(180.dp)
+                    .padding(top = 4.dp, bottom = 4.dp),
+                contentScale = ContentScale.Crop,
+                placeholder = painterResource(id = com.example.myapplication.R.drawable.image_placeholder)
+            )
             Text(
                 text = article.title!!,
                 style = Typography.titleMedium
             )
-            Text(
-                text = article.publishedAt!!,
-                style = Typography.titleMedium
-            )
             Row(
                 modifier = modifier
-                    .align(alignment = Alignment.End)
+                    .fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.Top
                 ){
+                Text(
+                    text = dateFormat(article.publishedAt!!),
+                    style = Typography.labelSmall
+                )
                 Button(
                     onClick =  onItemClick,
                 ) {
@@ -82,6 +85,10 @@ fun NewsItem(
             }
          }
     }
+}
+
+private fun dateFormat(str: String): String {
+    return str.substring(8,10) + "/" + str.substring(5,7) + "/" + str.substring(0,4)
 }
 
 @Preview(showBackground = true)
